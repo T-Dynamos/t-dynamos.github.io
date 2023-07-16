@@ -1,79 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <!-- Page setup -->
-    <meta charset="utf-8">
-    <title>Your title here</title>
-    <meta name="description" content="A brief description of your site for search engines">
-    <meta name="author" content="Information about the author here">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-    <link rel="icon" type="image/png" href="favicon.png">
-  
-    <!-- Stylesheets -->
-    <!-- Reset default styles and add support for google fonts -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css" />
-    <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
-   
-    <!-- Custom styles -->
-    <link href="style.css" rel="stylesheet" type="text/css" />
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>    
-
-    <!-- Want to add Bootstrap? -->
-    <!-- Visit: https://getbootstrap.com/docs/4.3/getting-started/introduction/ -->
+<head>
+  <title>Certificate</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
     
-  </head>
-  
-  <body>
-
-    <header id="header">
-      <img src="logo.jpg">
-      <h1>Simple Website</h1>
+    .container {
+      text-align: center;
+      margin-top: 100px;
+    }
+    
+    h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    p {
+      color: #777;
+      font-size: 18px;
+    }
+    
+    .checkmark {
+      width: 100px;
+      height: 100px;
+      background-color: #4CAF50;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px auto; /* Updated */
+      position: relative; /* Added */
+    }
+    
+    .checkmark:after {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 50px;
+      border: solid white;
+      border-width: 0 10px 10px 0;
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+    }
+  </style>
+  <script>
+    // Function to fetch data from URL and update webpage content
+    function fetchData() {
+      var url = "/somename";
       
-      <!-- Menu link fragment #id should match a div id. Example: <a href="#home"> links to <div id="home"></div>  -->
-      <ul class="main-menu">
-        <li><a href="#home">home</a></li>
-        <li><a href="#about">about</a></li>
-        <li><a href="#contact">contact</a></li>
-      </ul>                 
-    </header>
-   
-    <div id="container">
-      <div class="inner">
-        <div id="content"> 
-          
-          <div id="home" class="content-region hide">
-            <h2>Home</h2>
-            <p>
-              This is a simple website template published with Github Pages. <a href="https://github.com/cpl-makerlab/simple-website-template">Fork this repository</a> to create your own site!
-            </p>
-          </div>
-          
-          <div id="about" class="content-region hide">
-            <h2>About</h2>
-            <p>
-              Sed tempus urna et pharetra pharetra massa massa ultricies. Porttitor rhoncus dolor purus non enim praesent. Id aliquet risus feugiat in ante metus dictum. 
-            </p>
-          </div>
-          
-          <div id="contact" class="content-region hide">
-            <h2>Contact</h2>
-            <p>
-              Pellentesque nec nam aliquam sem et tortor consequat. Quisque sagittis purus sit amet volutpat consequat. Magna eget est lorem ipsum dolor. 
-            </p>
-          </div>
-          
-        </div>
-      </div>
-    </div>
-
-    <footer>  
-      Footer region
-    </footer>
-    
-    <!-- Load additional JS scripts here -->
-    <script type="text/javascript" src="script.js"></script>
-    
-  </body>
+      fetch(url)
+        .then(function(response) {
+          return response.text();
+        })
+        .then(function(data) {
+          var element = document.getElementById("name-container");
+          element.textContent = data;
+        })
+        .catch(function(error) {
+          console.log("Error fetching data: ", error);
+        });
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>This certificate is presented to <span id="name-container"></span></h1>
+    <div class="checkmark"></div>
+    <p>Verified</p>
+  </div>
+  
+  <!-- Call the fetchData() function to retrieve and display the data -->
+  <script>
+    fetchData();
+  </script>
+</body>
 </html>
