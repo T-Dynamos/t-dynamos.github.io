@@ -32,8 +32,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 20px auto; /* Updated */
-      position: relative; /* Added */
+      margin-top: auto 20px;
+      position: relative;
     }
     
     .checkmark:after {
@@ -48,35 +48,12 @@
       -ms-transform: rotate(45deg);
     }
   </style>
-  <script>
-    // Function to fetch data from URL and update webpage content
-    function fetchData() {
-      var url = "/somename";
-      
-      fetch(url)
-        .then(function(response) {
-          return response.text();
-        })
-        .then(function(data) {
-          var element = document.getElementById("name-container");
-          element.textContent = data;
-        })
-        .catch(function(error) {
-          console.log("Error fetching data: ", error);
-        });
-    }
-  </script>
 </head>
 <body>
   <div class="container">
-    <h1>This certificate is presented to <span id="name-container"></span></h1>
+    <h1>This certificate is presented to Ansh Kumar <span id="name-container"></span></h1>
     <div class="checkmark"></div>
     <p>Verified</p>
   </div>
-  
-  <!-- Call the fetchData() function to retrieve and display the data -->
-  <script>
-    fetchData();
-  </script>
 </body>
 </html>
