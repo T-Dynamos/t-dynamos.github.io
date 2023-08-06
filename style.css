@@ -1,0 +1,82 @@
+body {
+  font-family: "Courier New", monospace;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000;
+}
+
+.terminal {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #999;
+  border-radius: 10px;
+  padding: 10px;
+  width: 500px;
+  height: 300px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button {
+  width: 12px;
+  height: 12px;
+  margin-left: 5px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.red {
+  background-color: #ff5f56;
+}
+
+.yellow {
+  background-color: #ffbd2e;
+}
+
+.green {
+  background-color: #27c93f;
+}
+
+.content {
+  padding: 5px;
+  height: 250px;
+  overflow-y: hidden; /* Hide the scroll bar */
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+span.prompt {
+  color: #27c93f; /* Set $ symbol color to green */
+}
+.typing-animation {
+  animation: typing 2s steps(30), blink-caret 0.5s step-end infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: var(--green);
+  }
+}
