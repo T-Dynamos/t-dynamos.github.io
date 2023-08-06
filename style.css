@@ -80,3 +80,29 @@ span.prompt {
     border-color: var(--green);
   }
 }
+
+@media (max-width: 600px) {
+  .terminal {
+    max-width: 90%;
+    max-height: 70%;
+  }
+
+  .content {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 400px) {
+  .terminal {
+    max-width: 85%;
+    max-height: 60%;
+  }
+
+  .content {
+    max-height: 150px;
+  }
+
+  pre {
+    font-size: 14px; /* Adjust the font size for smaller screens */
+  }
+}
