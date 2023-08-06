@@ -5,13 +5,13 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #000;
+  background-color: #1b181f;
 }
 
 .terminal {
-  background-color: #000;
+  background-color: #1e222a;
   color: #fff;
-  border: 1px solid #999;
+  border: 1px solid #7f848f;
   border-radius: 10px;
   padding: 10px;
   max-width: 95%; /* Adjust the maximum width for responsiveness */
@@ -48,7 +48,7 @@ body {
 
 .content {
   padding: 5px;
-  max-height: calc(100% - 60px); /* Adjust the maximum height for responsiveness */
+  max-height: calc(100%); /* Adjust the maximum height for responsiveness */
   overflow-y: auto; /* Show the scroll bar only when needed */
   font-family: "JetBrains Mono", monospace; /* Set the font for the content */
 }
