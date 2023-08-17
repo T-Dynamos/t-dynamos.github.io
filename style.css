@@ -1,22 +1,24 @@
 body {
   font-family: "Courier New", monospace;
   margin: 0;
+  padding: 10px;
   display: flex;
-  justify-content: center;
+  justify-content: center; 
   align-items: center;
-  height: 100vh;
   background-color: #1b181f;
+  min-height: 100vh; 
+  overflow: hidden;
 }
 
 .terminal {
-  background-color: #1e222a;
+  font-size: 20px;
+  background-color: #101010;
   color: #fff;
   border: 1px solid #7f848f;
   border-radius: 10px;
   padding: 10px;
-  max-width: 95%; /* Adjust the maximum width for responsiveness */
-  max-height: 80%; /* Adjust the maximum height for responsiveness */
-  overflow: hidden;
+  width: 80%; 
+  max-width: 600px; 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -28,7 +30,7 @@ body {
 
 .button {
   width: 12px;
-  height: 12px;
+  height: 12px; 
   margin-left: 5px;
   border-radius: 50%;
   display: inline-block;
@@ -48,9 +50,9 @@ body {
 
 .content {
   padding: 5px;
-  max-height: calc(100%); /* Adjust the maximum height for responsiveness */
-  overflow-y: auto; /* Show the scroll bar only when needed */
-  font-family: "JetBrains Mono", monospace; /* Set the font for the content */
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  font-family: "JetBrains Mono", monospace;
 }
 
 pre {
@@ -58,48 +60,14 @@ pre {
   white-space: pre-wrap;
 }
 
-
 span.prompt {
-  color: #27c93f; /* Set $ symbol color to green */
+  color: #27c93f;
 }
 
-/* Media Queries for responsiveness */
-@media (max-width: 600px) {
-  .terminal {
-    max-width: 90%;
-    max-height: 70%;
-  }
 
-  .content {
-    max-height: 200px;
+
+@media only screen and (max-width: 768px) {
+  body {
+    background-color: #101010;
   }
 }
-
-@media (max-width: 400px) {
-  .terminal {
-    max-width: 85%;
-    max-height: 60%;
-  }
-
-  .content {
-    max-height: 150px;
-  }
-
-  pre {
-    font-size: 14px; /* Adjust the font size for smaller screens */
-  }
-}
-.content::-webkit-scrollbar {
-  width: 8px; /* Width of the scrollbar */
-  background-color: #222; /* Background color of the scrollbar track */
-}
-
-.content::-webkit-scrollbar-thumb {
-  background-color: #444; /* Color of the scrollbar thumb (the moving part) */
-  border-radius: 4px; /* Rounded corners for the scrollbar thumb */
-}
-
-.content::-webkit-scrollbar-thumb:hover {
-  background-color: #666; /* Color of the scrollbar thumb on hover */
-}
-
