@@ -7,10 +7,12 @@ body {
   align-items: center;
   background-color: #1b181f;
   min-height: 100vh; 
+  overflow: hidden;
 }
 
 .terminal {
-  background-color: #1e222a;
+  font-size: 20px;
+  background-color: #101010;
   color: #fff;
   border: 1px solid #7f848f;
   border-radius: 10px;
@@ -28,7 +30,7 @@ body {
 
 .button {
   width: 12px;
-  height: 12px;
+  height: 12px; 
   margin-left: 5px;
   border-radius: 50%;
   display: inline-block;
@@ -62,37 +64,10 @@ span.prompt {
   color: #27c93f;
 }
 
-/* Media Query for Laptop Screens */
-@media only screen and (min-width: 768px) {
-  .content {
-    font-size: 18px;
-  }
-  
-  .terminal {
-    width: 70%;
-  }
-}
 
 
-/* Media Query for Mobile Screens */
-@media only screen and (max-width: 414px)
- {
-  .terminal {
-    width: 95%; 
-    max-width: none; 
-    border-radius: 0; 
-    font-size: 15px;
-  }
-
-  .header {
-    justify-content: center;
-  }
-
-  .button {
-    margin-left: 10px;
-  }
-
-  .content {
-    max-height: calc(100vh - 130px);
+@media only screen and (max-width: 768px) {
+  body {
+    background-color: #101010;
   }
 }
