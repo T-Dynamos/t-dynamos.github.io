@@ -8,5 +8,5 @@
   _/\ __)/_)  [=]  ∞ hours
   \/-____\/  
 
-[-]: Welcome to this fun simulation aka Life.
+[-]: Welcome to this blog!
 ```

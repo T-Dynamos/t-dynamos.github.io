@@ -8,14 +8,13 @@ I started with checking the [uvloop](https://github.com/MagicStack/uvloop)'s git
 
 ![image](https://github.com/T-Dynamos/t-dynamos.github.io/assets/68729523/1bc8a602-d805-49c3-9717-20b61efbccf9)
 
-It's a good thing as p4a already have `CythonRecipe` support. So Let's start!
+It's a good thing as p4a already have `CythonRecipe` support. So Let's start cooking!
 
-Also let's add a error counter, so that we can count how many errors we solved.
-`error_counter = 0`
 
 ### Step 1 : Build on your system
 
-First step to create any recipe is to first download and try build source code on your system. I ran:
+First step to cook any recipe is to first download and try build source code on your system.
+I ran:
 
 ```console
 git clone https://github.com/MagicStack/uvloop --depth 1
@@ -53,12 +52,12 @@ ERROR Backend subprocess exited when trying to invoke build_sdist
 It's a very normal error, saying to fetch submodules. Can be fixed by running:
 
 ```console
-git submodule update --recursive
+git submodule init; git submodule update
 ```
 
 This concludes two things:
-1. We can't use source from github releases as it won't contain submodules
-2. We need to use git url for p4a and specify version to a commit.
+1. We can't use source from github releases as it won't contain submodules.
+2. We need to use git url for p4a and specify version to a commit hash.
 
 After fixing this error, it successfully builds on my system.
 
@@ -169,7 +168,8 @@ ld: error: unable to find library -lpthread
 [Quick stackoverflow](https://stackoverflow.com/questions/30801752/android-ndk-and-pthread) suggests that:
 > The android libc, bionic, provides built-in support for pthreads, so no
 additional linking (-lpthreads) is necessary
-> 
+
+
 But I don't want to do patching, So I searched for `libuv` in [`termux-packages`](https://github.com/termux/termux-packages/blob/master/packages/libuv/build.sh).
 And found this in `build.sh`:
 
@@ -184,6 +184,45 @@ This means we need to add `PLATFORM=android` in recipe env:
 ```python
 env["PLATFORM"] = "android"
 ```
-Nevermind, I ran it, It does not works. Now I have to create a patch file :)
+Nevermind, I ran it, It does not works. Next I approach I tried was create a same
+recipe as librt for libpthread, and I did it by just copy, pasting and replacing
+librt to libpthread. And now for running the build, I have to force buildozer to rebuild
+that particular recipe. Here is what I use for clean:
 
-If you have any questions please come on discord: AnshDadwal#8410
+
+```
+cd ./.buildozer/ 
+find -name "*uvloop*" -exec rm -rf {} +
+rm -rf ./android/platform/build-armeabi-v7a/dists/myapp/dist_info.json
+```
+
+This delete's all the files related to recipe and force rebuild.
+And guess what it works!
+
+So here is the final recipe:
+```python3
+from pythonforandroid.recipe import PythonRecipe
+
+
+class UvloopRecipe(PythonRecipe):
+    # 0.19.0
+    version = '6c770dc3fbdd281d15c2ad46588c139696f9269c'
+    url = 'git+https://github.com/MagicStack/uvloop'
+    depends = ['cython', 'setuptools', 'librt', 'libpthread']
+    call_hostpython_via_targetpython = False
+
+    def get_recipe_env(self, arch):
+        env = super().get_recipe_env(arch)
+        env["LIBUV_CONFIGURE_HOST"] = arch.command_prefix
+        env["PLATFORM"] = "android"
+        return env
+
+
+recipe = UvloopRecipe()
+```
+
+[Click here to see PR](https://github.com/kivy/python-for-android/pull/2998)
+
+**Total time took to cook this recipe**: `6hrs`
+
+If you have any questions please come on [kivy's discord](https://chat.kivy.org/), `python-for-android` section.
