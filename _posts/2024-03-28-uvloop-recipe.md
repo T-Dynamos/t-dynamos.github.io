@@ -1,6 +1,6 @@
 # Creating recipe for `uvloop`
 
-Hi! Today we will try to create a p4a recipe for [uvloop](https://github.com/MagicStack/uvloop).
+Hi! Today we will try to cook a p4a recipe for [uvloop](https://github.com/MagicStack/uvloop).
 Today As usual I was checking `python-for-android`'s github and found [this issue](https://github.com/kivy/python-for-android/issues/2997).
 OP was requesting for `uvloop` recipe, saying "*improved the performance...*" so I thought to give it a try.
 
@@ -61,7 +61,7 @@ This concludes two things:
 
 After fixing this error, it successfully builds on my system.
 
-### Step 2: Create recipe
+### Step 2: Cook recipe
 
 Start by forking p4a then create a new branch:
 ![image](https://github.com/T-Dynamos/t-dynamos.github.io/assets/68729523/1e30c706-8bce-4865-a2b7-e72081b7a594)
@@ -184,20 +184,20 @@ This means we need to add `PLATFORM=android` in recipe env:
 ```python
 env["PLATFORM"] = "android"
 ```
-Nevermind, I ran it, It does not works. Next I approach I tried was create a same
+Nevermind, I ran it, It does not works. Next I approach I tried was to create a same
 recipe as librt for libpthread, and I did it by just copy, pasting and replacing
 librt to libpthread. And now for running the build, I have to force buildozer to rebuild
-that particular recipe. Here is what I use for clean:
+that particular recipe. Here is what I use for cleaning and rebuilding:
 
 
 ```
 cd ./.buildozer/ 
-find -name "*uvloop*" -exec rm -rf {} +
+find -name "*uvloop*" -exec rm -rf {} + # finds folder with "uvloop" and delete them
 rm -rf ./android/platform/build-armeabi-v7a/dists/myapp/dist_info.json
 ```
 
 This delete's all the files related to recipe and force rebuild.
-And guess what it works!
+And guess what, It worked!.
 
 So here is the final recipe:
 ```python3
