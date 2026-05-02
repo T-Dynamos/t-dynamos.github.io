@@ -1,0 +1,180 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { getWallpapers } from "@/utils/wallpapers";
+import { SITE } from "@/config";
+
+const wallpapers = await getWallpapers();
+
+const pageTitle = `Wallpapers | ${SITE.title}`;
+const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.title}.`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <Header />
+  <main id="main-content" class="app-layout pb-12">
+    <section class="pt-8 pb-6">
+      <p class="text-sm uppercase tracking-[0.35em] text-accent/85">
+        Wallpaper library
+      </p>
+      <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Wallpapers
+      </h1>
+      <p class="mt-3 text-sm text-foreground/70">
+        All black hole wallpapers are rendered from
+        <a
+          href="https://www.shadertoy.com/view/wXdfzj"
+          target="_blank"
+          rel="noreferrer"
+          class="underline decoration-dashed underline-offset-4 hover:text-accent"
+        >
+          this Shadertoy scene
+        </a>
+        .
+      </p>
+    </section>
+
+    <section class="pb-6">
+      <div
+        id="wallpaper-gallery"
+        class="grid auto-rows-max gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:grid-flow-dense"
+        aria-live="polite"
+      ></div>
+      <div id="gallery-sentinel" class="h-12 w-full" aria-hidden="true"></div>
+      <button
+        id="load-more-btn"
+        type="button"
+        class="mt-4 hidden rounded-full border border-border px-4 py-2 text-sm font-medium hover:border-accent hover:text-accent"
+      >
+        Load more wallpapers
+      </button>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script
+  is:inline
+  type="application/json"
+  id="wallpapers-data"
+  set:html={JSON.stringify(wallpapers)}
+></script>
+
+<script is:inline type="module">
+  const dataNode = document.querySelector("#wallpapers-data");
+  const gallery = document.querySelector("#wallpaper-gallery");
+  const sentinel = document.querySelector("#gallery-sentinel");
+  const loadMoreBtn = document.querySelector("#load-more-btn");
+
+  if (!dataNode || !gallery || !sentinel) {
+    throw new Error("Wallpaper gallery bootstrap failed.");
+  }
+
+  const wallpapers = JSON.parse(dataNode.textContent || "[]");
+  const batchSize = 6;
+  let index = 0;
+
+  const getSpanClass = (width, height) => {
+    const ratio = width / height;
+
+    if (ratio >= 1.9) return "xl:col-span-2";
+    if (ratio >= 1.35) return "lg:col-span-2";
+    return "";
+  };
+
+  const createCard = (wallpaper) => {
+    const article = document.createElement("article");
+    article.className = `group ${getSpanClass(wallpaper.width, wallpaper.height)}`;
+
+    const figure = document.createElement("figure");
+    figure.className = "flex h-full flex-col";
+
+    const imageWrap = document.createElement("div");
+    imageWrap.className = "overflow-hidden rounded-2xl bg-muted/35";
+
+    const image = document.createElement("img");
+    image.src = wallpaper.src;
+    image.alt = wallpaper.fileName;
+    image.width = wallpaper.width;
+    image.height = wallpaper.height;
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.className = "block h-auto w-full object-cover";
+    imageWrap.appendChild(image);
+
+    const caption = document.createElement("figcaption");
+    caption.className = "p-3 text-sm";
+
+    const details = document.createElement("div");
+    details.className = "min-w-0";
+
+    const name = document.createElement("div");
+    name.className = "truncate font-semibold";
+    name.textContent = wallpaper.fileName;
+
+    const meta = document.createElement("div");
+    meta.className = "mt-1 flex flex-wrap gap-x-3 gap-y-1 text-foreground/70";
+
+    const resolution = document.createElement("span");
+    resolution.textContent = `${wallpaper.width} × ${wallpaper.height}`;
+
+    const size = document.createElement("span");
+    size.textContent = wallpaper.sizeLabel;
+
+    meta.appendChild(resolution);
+    meta.appendChild(size);
+    details.appendChild(name);
+    details.appendChild(meta);
+
+    const download = document.createElement("a");
+    download.href = wallpaper.src;
+    download.download = wallpaper.fileName;
+    download.className =
+      "mt-3 inline-flex w-fit shrink-0 rounded-full border border-border px-3 py-2 font-medium transition hover:border-accent hover:text-accent";
+    download.textContent = "Download";
+
+    caption.appendChild(details);
+    caption.appendChild(download);
+
+    figure.appendChild(imageWrap);
+    figure.appendChild(caption);
+    article.appendChild(figure);
+
+    return article;
+  };
+
+  const renderNextBatch = () => {
+    const nextItems = wallpapers.slice(index, index + batchSize);
+    nextItems.forEach((wallpaper) => gallery.appendChild(createCard(wallpaper)));
+    index += nextItems.length;
+
+    if (index >= wallpapers.length) {
+      sentinel.remove();
+      loadMoreBtn?.remove();
+      observer?.disconnect();
+    }
+  };
+
+  const onLoadMore = () => renderNextBatch();
+
+  const observer = "IntersectionObserver" in window
+    ? new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          renderNextBatch();
+        }
+      }, { rootMargin: "600px 0px" })
+    : null;
+
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", onLoadMore);
+  }
+
+  if (observer) {
+    observer.observe(sentinel);
+  } else if (loadMoreBtn) {
+    loadMoreBtn.classList.remove("hidden");
+  }
+
+  renderNextBatch();
+</script>
