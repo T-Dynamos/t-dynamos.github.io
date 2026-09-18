@@ -89,6 +89,14 @@ const isActive = (path: string) => {
             Wallpapers
           </a>
         </li>
+        <li class="col-span-2">
+          <a
+            href="/photosphere"
+            class:list={{ "active-nav": isActive("/photosphere") }}
+          >
+            Photosphere
+          </a>
+        </li>
         {
           SITE.showArchives && (
             <li class="col-span-2">

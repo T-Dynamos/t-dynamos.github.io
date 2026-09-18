@@ -15,6 +15,7 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.14",
     "@astrojs/sitemap": "^3.6.0",
+    "@photo-sphere-viewer/core": "^5.15.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.6",
@@ -25,7 +26,8 @@
     "satori": "^0.18.3",
     "sharp": "^0.34.5",
     "slugify": "^1.6.6",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
