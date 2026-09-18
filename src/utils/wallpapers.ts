@@ -69,6 +69,10 @@ export async function getWallpapers(): Promise<WallpaperItem[]> {
       // Ignore if no exif or error parsing
     }
 
+    if (fileName.endsWith(".png")) {
+      dateAdded = new Date("2020-01-01").getTime(); // Force black hole images to be oldest
+    }
+
     return {
       ...image,
       fileName,
