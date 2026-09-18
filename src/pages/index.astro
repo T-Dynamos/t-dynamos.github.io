@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -11,7 +10,7 @@ import getSortedPosts from "@/utils/getSortedPosts";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import { SITE } from "@/config";
 import { SOCIALS } from "@/constants";
-import redditBanner from "@/assets/images/reddit_banner.png";
+import LorenzBackground from "@/components/LorenzBackground.astro";
 
 const posts = await getCollection("blog");
 
@@ -21,6 +20,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
 <Layout>
+  <LorenzBackground />
   <Header />
   <main id="main-content" data-layout="index" class="app-layout">
     <section id="hero" class:list={["pt-8 pb-6", "border-b border-border"]}>
@@ -31,24 +31,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       <p>
         I am Ansh Dadwal and this is my personal blog.
       </p>
-
-      <div class="my-6">
-        <Image
-          src={redditBanner}
-          alt="Reddit Banner"
-          class="rounded-2xl shadow-lg"
-          width={800}
-        />
-        <p class="mt-2 text-sm italic opacity-80">
-          Source: <a
-            href="https://paulbourke.net/fractals/lorenz/"
-            class="underline decoration-dashed underline-offset-4 hover:text-accent"
-            target="_blank"
-          >
-            Lorenz Attractor by Paul Bourke
-          </a>
-        </p>
-      </div>
 
       {
         // only display if at least one social link is enabled

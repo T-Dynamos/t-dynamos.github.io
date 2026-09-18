@@ -1,0 +1,87 @@
+---
+---
+<canvas id="lorenz-canvas" class="fixed inset-0 -z-10 w-full h-full pointer-events-none opacity-25 blur-[2px] dark:opacity-20"></canvas>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const canvas = document.getElementById('lorenz-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    if (!ctx) return;
+    
+    let width: number, height: number;
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Lorenz Attractor parameters
+    const a = 10, b = 28, c = 8/3;
+    const dt = 0.005;
+
+    // Helper to get current theme accent color
+    const getAccentColor = () => {
+      return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff6b01';
+    };
+
+    let x = 0.1, y = 0, z = 0;
+    const points: {x: number, y: number, z: number}[] = [];
+    const maxPoints = 2500;
+
+    let animId: number;
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Calculate next points (calculate multiple steps per frame for speed)
+      for (let i = 0; i < 4; i++) {
+        let dx = (a * (y - x)) * dt;
+        let dy = (x * (b - z) - y) * dt;
+        let dz = (x * y - c * z) * dt;
+        
+        x += dx;
+        y += dy;
+        z += dz;
+        
+        points.push({ x, y, z });
+        if (points.length > maxPoints) {
+          points.shift();
+        }
+      }
+
+      const scale = Math.min(width, height) / 60;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      ctx.beginPath();
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        
+        // Simple isometric projection
+        const px = centerX + p.x * scale * 1.5;
+        const py = centerY - (p.z - 28) * scale + p.y * scale * 0.3;
+
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      
+      ctx.strokeStyle = getAccentColor();
+      ctx.lineWidth = 2.0;
+      ctx.lineJoin = "round";
+      ctx.stroke();
+
+      animId = requestAnimationFrame(draw);
+    }
+    
+    animId = requestAnimationFrame(draw);
+
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    }, { once: true });
+  });
+</script>

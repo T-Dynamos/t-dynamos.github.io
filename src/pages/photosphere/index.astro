@@ -50,122 +50,128 @@ const pageDescription = `Browse ${photospheres.length} 360-degree photospheres f
 ></script>
 
 <script is:inline type="module">
-  const dataNode = document.querySelector("#photospheres-data");
-  const gallery = document.querySelector("#photosphere-gallery");
-  const sentinel = document.querySelector("#gallery-sentinel");
-  const loadMoreBtn = document.querySelector("#load-more-btn");
+  document.addEventListener("astro:page-load", () => {
+    const dataNode = document.querySelector("#photospheres-data");
+    const gallery = document.querySelector("#photosphere-gallery");
+    const sentinel = document.querySelector("#gallery-sentinel");
+    const loadMoreBtn = document.querySelector("#load-more-btn");
 
-  if (!dataNode || !gallery || !sentinel) {
-    throw new Error("Photosphere gallery bootstrap failed.");
-  }
-
-  const photospheres = JSON.parse(dataNode.textContent || "[]");
-  const batchSize = 6;
-  let index = 0;
-
-  const createCard = (photosphere) => {
-    const article = document.createElement("article");
-    article.className = "group";
-
-    const figure = document.createElement("figure");
-    figure.className = "flex h-full flex-col";
-
-    const imageWrap = document.createElement("a");
-    imageWrap.href = `/photosphere/${photosphere.slug}`;
-    imageWrap.className = "overflow-hidden rounded-2xl bg-muted/35 block relative transition-transform hover:scale-[1.02]";
-
-    const image = document.createElement("img");
-    image.src = photosphere.src;
-    image.alt = photosphere.fileName;
-    image.width = photosphere.width;
-    image.height = photosphere.height;
-    image.loading = "lazy";
-    image.decoding = "async";
-    image.className = "block h-48 w-full object-cover";
-    
-    // Add a small 360 badge to show it's interactive
-    const badge = document.createElement("div");
-    badge.className = "absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-md font-medium";
-    badge.textContent = "360°";
-
-    imageWrap.appendChild(image);
-    imageWrap.appendChild(badge);
-
-    const caption = document.createElement("figcaption");
-    caption.className = "p-3 text-sm";
-
-    const details = document.createElement("div");
-    details.className = "min-w-0";
-
-    const name = document.createElement("a");
-    name.href = `/photosphere/${photosphere.slug}`;
-    name.className = "truncate font-semibold hover:text-accent block";
-    name.textContent = photosphere.fileName;
-
-    const meta = document.createElement("div");
-    meta.className = "mt-1 flex flex-wrap gap-x-3 gap-y-1 text-foreground/70";
-
-    const resolution = document.createElement("span");
-    resolution.textContent = `${photosphere.width} × ${photosphere.height}`;
-
-    meta.appendChild(resolution);
-
-    if (photosphere.description) {
-      const desc = document.createElement("div");
-      desc.className = "text-xs opacity-90 mt-1 block w-full truncate";
-      desc.textContent = photosphere.description;
-      meta.appendChild(desc);
+    if (!dataNode || !gallery || !sentinel) {
+      return;
     }
-    
-    const dateDiv = document.createElement("div");
-    dateDiv.className = "text-xs opacity-80 mt-1 block w-full";
-    const dateOpts = { year: 'numeric', month: 'short', day: 'numeric' };
-    dateDiv.textContent = `Added: ${new Date(photosphere.dateAdded).toLocaleDateString(undefined, dateOpts)}`;
-    meta.appendChild(dateDiv);
 
-    details.appendChild(name);
-    details.appendChild(meta);
+    const photospheres = JSON.parse(dataNode.textContent || "[]");
+    const batchSize = 6;
+    let index = 0;
 
-    caption.appendChild(details);
+    // clear the gallery in case we navigated back and the container is stale
+    gallery.innerHTML = "";
 
-    figure.appendChild(imageWrap);
-    figure.appendChild(caption);
-    article.appendChild(figure);
+    const createCard = (photosphere) => {
+      const article = document.createElement("article");
+      article.className = "group";
 
-    return article;
-  };
+      const figure = document.createElement("figure");
+      figure.className = "flex h-full flex-col";
 
-  const renderNextBatch = () => {
-    const nextItems = photospheres.slice(index, index + batchSize);
-    nextItems.forEach((photosphere) => gallery.appendChild(createCard(photosphere)));
-    index += nextItems.length;
+      const imageWrap = document.createElement("a");
+      imageWrap.href = `/photosphere/${photosphere.slug}`;
+      imageWrap.className = "overflow-hidden rounded-2xl bg-muted/35 block relative transition-transform hover:scale-[1.02]";
 
-    if (index >= photospheres.length) {
-      sentinel.remove();
-      loadMoreBtn?.remove();
-      observer?.disconnect();
+      const image = document.createElement("img");
+      image.src = photosphere.src;
+      image.alt = photosphere.fileName;
+      image.width = photosphere.width;
+      image.height = photosphere.height;
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.className = "block h-48 w-full object-cover";
+      
+      const badge = document.createElement("div");
+      badge.className = "absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-md font-medium";
+      badge.textContent = "360°";
+
+      imageWrap.appendChild(image);
+      imageWrap.appendChild(badge);
+
+      const caption = document.createElement("figcaption");
+      caption.className = "p-3 text-sm";
+
+      const details = document.createElement("div");
+      details.className = "min-w-0 w-full overflow-hidden";
+
+      const name = document.createElement("a");
+      name.href = `/photosphere/${photosphere.slug}`;
+      name.className = "font-semibold hover:text-accent block break-all whitespace-normal";
+      name.textContent = photosphere.fileName;
+
+      const meta = document.createElement("div");
+      meta.className = "mt-1 flex flex-col gap-1 text-foreground/70";
+
+      const resolution = document.createElement("span");
+      resolution.textContent = `${photosphere.width} × ${photosphere.height}`;
+
+      meta.appendChild(resolution);
+
+      if (photosphere.description) {
+        const desc = document.createElement("div");
+        desc.className = "text-xs opacity-90 mt-1 block w-full break-words whitespace-normal";
+        desc.textContent = photosphere.description;
+        meta.appendChild(desc);
+      }
+      
+      const dateDiv = document.createElement("div");
+      dateDiv.className = "text-xs opacity-80 mt-1 block w-full";
+      const dateOpts = { year: 'numeric', month: 'short', day: 'numeric' };
+      dateDiv.textContent = `Added: ${new Date(photosphere.dateAdded).toLocaleDateString(undefined, dateOpts)}`;
+      meta.appendChild(dateDiv);
+
+      details.appendChild(name);
+      details.appendChild(meta);
+
+      caption.appendChild(details);
+
+      figure.appendChild(imageWrap);
+      figure.appendChild(caption);
+      article.appendChild(figure);
+
+      return article;
+    };
+
+    let observer = null;
+
+    const renderNextBatch = () => {
+      const nextItems = photospheres.slice(index, index + batchSize);
+      nextItems.forEach((photosphere) => gallery.appendChild(createCard(photosphere)));
+      index += nextItems.length;
+
+      if (index >= photospheres.length) {
+        sentinel.remove();
+        if (loadMoreBtn) loadMoreBtn.remove();
+        if (observer) observer.disconnect();
+      }
+    };
+
+    const onLoadMore = () => renderNextBatch();
+
+    observer = "IntersectionObserver" in window
+      ? new IntersectionObserver((entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            renderNextBatch();
+          }
+        }, { rootMargin: "600px 0px" })
+      : null;
+
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener("click", onLoadMore);
     }
-  };
 
-  const onLoadMore = () => renderNextBatch();
+    if (observer) {
+      observer.observe(sentinel);
+    } else if (loadMoreBtn) {
+      loadMoreBtn.classList.remove("hidden");
+    }
 
-  const observer = "IntersectionObserver" in window
-    ? new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          renderNextBatch();
-        }
-      }, { rootMargin: "600px 0px" })
-    : null;
-
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener("click", onLoadMore);
-  }
-
-  if (observer) {
-    observer.observe(sentinel);
-  } else if (loadMoreBtn) {
-    loadMoreBtn.classList.remove("hidden");
-  }
-
-  renderNextBatch();
+    renderNextBatch();
+  });
 </script>
