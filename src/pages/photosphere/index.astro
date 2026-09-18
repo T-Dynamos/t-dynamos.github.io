@@ -112,6 +112,20 @@ const pageDescription = `Browse ${photospheres.length} 360-degree photospheres f
     resolution.textContent = `${photosphere.width} × ${photosphere.height}`;
 
     meta.appendChild(resolution);
+
+    if (photosphere.description) {
+      const desc = document.createElement("div");
+      desc.className = "text-xs opacity-90 mt-1 block w-full truncate";
+      desc.textContent = photosphere.description;
+      meta.appendChild(desc);
+    }
+    
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "text-xs opacity-80 mt-1 block w-full";
+    const dateOpts = { year: 'numeric', month: 'short', day: 'numeric' };
+    dateDiv.textContent = `Added: ${new Date(photosphere.dateAdded).toLocaleDateString(undefined, dateOpts)}`;
+    meta.appendChild(dateDiv);
+
     details.appendChild(name);
     details.appendChild(meta);
 

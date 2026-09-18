@@ -114,16 +114,34 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
     name.textContent = wallpaper.fileName;
 
     const meta = document.createElement("div");
-    meta.className = "mt-1 flex flex-wrap gap-x-3 gap-y-1 text-foreground/70";
+    meta.className = "mt-1 flex flex-col gap-1 text-foreground/70";
 
+    const specs = document.createElement("div");
+    specs.className = "flex flex-wrap gap-x-3 gap-y-1";
+    
     const resolution = document.createElement("span");
     resolution.textContent = `${wallpaper.width} × ${wallpaper.height}`;
 
     const size = document.createElement("span");
     size.textContent = wallpaper.sizeLabel;
 
-    meta.appendChild(resolution);
-    meta.appendChild(size);
+    specs.appendChild(resolution);
+    specs.appendChild(size);
+    meta.appendChild(specs);
+
+    if (wallpaper.description) {
+      const desc = document.createElement("div");
+      desc.className = "text-xs opacity-90 mt-1";
+      desc.textContent = wallpaper.description;
+      meta.appendChild(desc);
+    }
+    
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "text-xs opacity-80 mt-1";
+    const dateOpts = { year: 'numeric', month: 'short', day: 'numeric' };
+    dateDiv.textContent = `Added: ${new Date(wallpaper.dateAdded).toLocaleDateString(undefined, dateOpts)}`;
+    meta.appendChild(dateDiv);
+
     details.appendChild(name);
     details.appendChild(meta);
 
