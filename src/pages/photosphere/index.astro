@@ -2,13 +2,13 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import { getWallpapers } from "@/utils/wallpapers";
+import { getPhotospheres } from "@/utils/photospheres";
 import { SITE } from "@/config";
 
-const wallpapers = await getWallpapers();
+const photospheres = await getPhotospheres();
 
-const pageTitle = `Wallpapers | ${SITE.title}`;
-const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.title}.`;
+const pageTitle = `Photospheres | ${SITE.title}`;
+const pageDescription = `Browse ${photospheres.length} 360-degree photospheres from ${SITE.title}.`;
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
@@ -16,29 +16,20 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
   <main id="main-content" class="app-layout pb-12">
     <section class="pt-8 pb-6">
       <p class="text-sm uppercase tracking-[0.35em] text-accent/85">
-        Wallpaper library
+        Photosphere library
       </p>
       <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-        Wallpapers
+        Photospheres
       </h1>
       <p class="mt-3 text-sm text-foreground/70">
-        All black hole wallpapers are rendered from
-        <a
-          href="https://www.shadertoy.com/view/wXdfzj"
-          target="_blank"
-          rel="noreferrer"
-          class="underline decoration-dashed underline-offset-4 hover:text-accent"
-        >
-          this Shadertoy scene
-        </a>
-        . Other images are original works.
+        Explore original 360-degree panoramic images. Click to interact with any scene.
       </p>
     </section>
 
     <section class="pb-6">
       <div
-        id="wallpaper-gallery"
-        class="grid auto-rows-max gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:grid-flow-dense"
+        id="photosphere-gallery"
+        class="grid auto-rows-max gap-5 sm:grid-cols-2 xl:grid-cols-3 xl:grid-flow-dense"
         aria-live="polite"
       ></div>
       <div id="gallery-sentinel" class="h-12 w-full" aria-hidden="true"></div>
@@ -47,7 +38,7 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
         type="button"
         class="mt-4 hidden rounded-full border border-border px-4 py-2 text-sm font-medium hover:border-accent hover:text-accent"
       >
-        Load more wallpapers
+        Load more
       </button>
     </section>
   </main>
@@ -57,51 +48,51 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
 <script
   is:inline
   type="application/json"
-  id="wallpapers-data"
-  set:html={JSON.stringify(wallpapers)}
+  id="photospheres-data"
+  set:html={JSON.stringify(photospheres)}
 ></script>
 
 <script is:inline type="module">
-  const dataNode = document.querySelector("#wallpapers-data");
-  const gallery = document.querySelector("#wallpaper-gallery");
+  const dataNode = document.querySelector("#photospheres-data");
+  const gallery = document.querySelector("#photosphere-gallery");
   const sentinel = document.querySelector("#gallery-sentinel");
   const loadMoreBtn = document.querySelector("#load-more-btn");
 
   if (!dataNode || !gallery || !sentinel) {
-    throw new Error("Wallpaper gallery bootstrap failed.");
+    throw new Error("Photosphere gallery bootstrap failed.");
   }
 
-  const wallpapers = JSON.parse(dataNode.textContent || "[]");
+  const photospheres = JSON.parse(dataNode.textContent || "[]");
   const batchSize = 6;
   let index = 0;
 
-  const getSpanClass = (width, height) => {
-    const ratio = width / height;
-
-    if (ratio >= 1.9) return "xl:col-span-2";
-    if (ratio >= 1.35) return "lg:col-span-2";
-    return "";
-  };
-
-  const createCard = (wallpaper) => {
+  const createCard = (photosphere) => {
     const article = document.createElement("article");
-    article.className = `group ${getSpanClass(wallpaper.width, wallpaper.height)}`;
+    article.className = "group";
 
     const figure = document.createElement("figure");
     figure.className = "flex h-full flex-col";
 
-    const imageWrap = document.createElement("div");
-    imageWrap.className = "overflow-hidden rounded-2xl bg-muted/35";
+    const imageWrap = document.createElement("a");
+    imageWrap.href = `/photosphere/${photosphere.slug}`;
+    imageWrap.className = "overflow-hidden rounded-2xl bg-muted/35 block relative transition-transform hover:scale-[1.02]";
 
     const image = document.createElement("img");
-    image.src = wallpaper.src;
-    image.alt = wallpaper.fileName;
-    image.width = wallpaper.width;
-    image.height = wallpaper.height;
+    image.src = photosphere.src;
+    image.alt = photosphere.fileName;
+    image.width = photosphere.width;
+    image.height = photosphere.height;
     image.loading = "lazy";
     image.decoding = "async";
-    image.className = "block h-auto w-full object-cover";
+    image.className = "block h-48 w-full object-cover";
+    
+    // Add a small 360 badge to show it's interactive
+    const badge = document.createElement("div");
+    badge.className = "absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-md font-medium";
+    badge.textContent = "360°";
+
     imageWrap.appendChild(image);
+    imageWrap.appendChild(badge);
 
     const caption = document.createElement("figcaption");
     caption.className = "p-3 text-sm";
@@ -109,33 +100,22 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
     const details = document.createElement("div");
     details.className = "min-w-0";
 
-    const name = document.createElement("div");
-    name.className = "truncate font-semibold";
-    name.textContent = wallpaper.fileName;
+    const name = document.createElement("a");
+    name.href = `/photosphere/${photosphere.slug}`;
+    name.className = "truncate font-semibold hover:text-accent block";
+    name.textContent = photosphere.fileName;
 
     const meta = document.createElement("div");
     meta.className = "mt-1 flex flex-wrap gap-x-3 gap-y-1 text-foreground/70";
 
     const resolution = document.createElement("span");
-    resolution.textContent = `${wallpaper.width} × ${wallpaper.height}`;
-
-    const size = document.createElement("span");
-    size.textContent = wallpaper.sizeLabel;
+    resolution.textContent = `${photosphere.width} × ${photosphere.height}`;
 
     meta.appendChild(resolution);
-    meta.appendChild(size);
     details.appendChild(name);
     details.appendChild(meta);
 
-    const download = document.createElement("a");
-    download.href = wallpaper.src;
-    download.download = wallpaper.fileName;
-    download.className =
-      "mt-3 inline-flex w-fit shrink-0 rounded-full border border-border px-3 py-2 font-medium transition hover:border-accent hover:text-accent";
-    download.textContent = "Download";
-
     caption.appendChild(details);
-    caption.appendChild(download);
 
     figure.appendChild(imageWrap);
     figure.appendChild(caption);
@@ -145,11 +125,11 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
   };
 
   const renderNextBatch = () => {
-    const nextItems = wallpapers.slice(index, index + batchSize);
-    nextItems.forEach((wallpaper) => gallery.appendChild(createCard(wallpaper)));
+    const nextItems = photospheres.slice(index, index + batchSize);
+    nextItems.forEach((photosphere) => gallery.appendChild(createCard(photosphere)));
     index += nextItems.length;
 
-    if (index >= wallpapers.length) {
+    if (index >= photospheres.length) {
       sentinel.remove();
       loadMoreBtn?.remove();
       observer?.disconnect();

@@ -1,0 +1,68 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { getPhotospheres } from "@/utils/photospheres";
+import { SITE } from "@/config";
+
+export async function getStaticPaths() {
+  const photospheres = await getPhotospheres();
+
+  return photospheres.map((photosphere) => ({
+    params: { slug: photosphere.slug },
+    props: { photosphere },
+  }));
+}
+
+const { slug } = Astro.params;
+const { photosphere } = Astro.props;
+
+const pageTitle = `${photosphere.fileName} - Photosphere | ${SITE.title}`;
+---
+
+<Layout title={pageTitle}>
+  <Header />
+  <main id="main-content" class="app-layout">
+    <section class="pt-8 pb-6">
+      <h1 class="my-4 text-3xl font-bold sm:text-4xl">
+        {photosphere.fileName}
+      </h1>
+      <p class="mb-6 flex gap-4 text-sm text-foreground/70">
+        <span>Resolution: {photosphere.width} × {photosphere.height}</span>
+        <span>Size: {photosphere.sizeLabel}</span>
+      </p>
+
+      <div 
+        id="photosphere-viewer" 
+        class="w-full h-[60vh] min-h-[500px] rounded-2xl shadow-lg border border-border"
+        data-src={photosphere.src}
+      ></div>
+
+      <div class="mt-8 text-center">
+        <a href="/photosphere" class="text-skin-accent hover:underline">
+          &larr; Back to Photospheres
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  import { Viewer } from "@photo-sphere-viewer/core";
+  import "@photo-sphere-viewer/core/index.css";
+
+  document.addEventListener("astro:page-load", () => {
+    const container = document.querySelector("#photosphere-viewer") as HTMLElement;
+
+    if (container) {
+      const src = container.dataset.src;
+      if (src) {
+        new Viewer({
+          container,
+          panorama: src,
+        });
+      }
+    }
+  });
+</script>
