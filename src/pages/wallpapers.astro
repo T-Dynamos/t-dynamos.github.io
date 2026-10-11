@@ -15,7 +15,7 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
   <Header />
   <main id="main-content" class="app-layout pb-12">
     <section class="pt-8 pb-6">
-      <p class="text-sm uppercase tracking-[0.35em] text-accent/85">
+      <p class="text-sm tracking-[0.35em] text-accent/85 uppercase">
         Wallpaper library
       </p>
       <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
@@ -38,9 +38,10 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
     <section class="pb-6">
       <div
         id="wallpaper-gallery"
-        class="grid auto-rows-max gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:grid-flow-dense"
+        class="grid auto-rows-max gap-5 sm:grid-cols-2 xl:grid-flow-dense xl:grid-cols-4"
         aria-live="polite"
-      ></div>
+      >
+      </div>
       <div id="gallery-sentinel" class="h-12 w-full" aria-hidden="true"></div>
       <button
         id="load-more-btn"
@@ -59,7 +60,7 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
   type="application/json"
   id="wallpapers-data"
   set:html={JSON.stringify(wallpapers)}
-></script>
+/>
 
 <script is:inline type="module">
   const dataNode = document.querySelector("#wallpapers-data");
@@ -83,7 +84,7 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
     return "";
   };
 
-  const createCard = (wallpaper) => {
+  const createCard = wallpaper => {
     const article = document.createElement("article");
     article.className = `group ${getSpanClass(wallpaper.width, wallpaper.height)}`;
 
@@ -93,15 +94,28 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
     const imageWrap = document.createElement("div");
     imageWrap.className = "overflow-hidden rounded-2xl bg-muted/35";
 
+    const imageLink = document.createElement("a");
+    imageLink.href = wallpaper.src;
+    imageLink.target = "_blank";
+    imageLink.rel = "noreferrer";
+    imageLink.title = `View full resolution ${wallpaper.fileName}`;
+    imageLink.className = "block cursor-zoom-in";
+
     const image = document.createElement("img");
-    image.src = wallpaper.src;
+    image.src = wallpaper.thumbnailSrc || wallpaper.src;
+    if (wallpaper.thumbnailSrcset) {
+      image.srcset = wallpaper.thumbnailSrcset;
+      image.sizes = "(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw";
+    }
     image.alt = wallpaper.fileName;
-    image.width = wallpaper.width;
-    image.height = wallpaper.height;
+    image.width = wallpaper.thumbnailWidth || wallpaper.width;
+    image.height = wallpaper.thumbnailHeight || wallpaper.height;
     image.loading = "lazy";
     image.decoding = "async";
-    image.className = "block h-auto w-full object-cover";
-    imageWrap.appendChild(image);
+    image.className =
+      "block h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]";
+    imageLink.appendChild(image);
+    imageWrap.appendChild(imageLink);
 
     const caption = document.createElement("figcaption");
     caption.className = "p-3 text-sm";
@@ -118,7 +132,7 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
 
     const specs = document.createElement("div");
     specs.className = "flex flex-wrap gap-x-3 gap-y-1";
-    
+
     const resolution = document.createElement("span");
     resolution.textContent = `${wallpaper.width} × ${wallpaper.height}`;
 
@@ -135,10 +149,10 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
       desc.textContent = wallpaper.description;
       meta.appendChild(desc);
     }
-    
+
     const dateDiv = document.createElement("div");
     dateDiv.className = "text-xs opacity-80 mt-1";
-    const dateOpts = { year: 'numeric', month: 'short', day: 'numeric' };
+    const dateOpts = { year: "numeric", month: "short", day: "numeric" };
     dateDiv.textContent = `Added: ${new Date(wallpaper.dateAdded).toLocaleDateString(undefined, dateOpts)}`;
     meta.appendChild(dateDiv);
 
@@ -164,7 +178,7 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
 
   const renderNextBatch = () => {
     const nextItems = wallpapers.slice(index, index + batchSize);
-    nextItems.forEach((wallpaper) => gallery.appendChild(createCard(wallpaper)));
+    nextItems.forEach(wallpaper => gallery.appendChild(createCard(wallpaper)));
     index += nextItems.length;
 
     if (index >= wallpapers.length) {
@@ -176,13 +190,17 @@ const pageDescription = `Browse ${wallpapers.length} wallpapers from ${SITE.titl
 
   const onLoadMore = () => renderNextBatch();
 
-  const observer = "IntersectionObserver" in window
-    ? new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          renderNextBatch();
-        }
-      }, { rootMargin: "600px 0px" })
-    : null;
+  const observer =
+    "IntersectionObserver" in window
+      ? new IntersectionObserver(
+          entries => {
+            if (entries.some(entry => entry.isIntersecting)) {
+              renderNextBatch();
+            }
+          },
+          { rootMargin: "600px 0px" }
+        )
+      : null;
 
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener("click", onLoadMore);
